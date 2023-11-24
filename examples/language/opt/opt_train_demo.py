@@ -13,6 +13,7 @@ from colossalai.booster.plugin import GeminiPlugin, HybridParallelPlugin, LowLev
 from colossalai.cluster import DistCoordinator
 from colossalai.logging import disable_existing_loggers, get_dist_logger
 from colossalai.nn.optimizer import HybridAdam
+from colossalai.utils import get_current_device
 
 require_version("datasets>=1.8.0", "To fix: pip install -r requirements.txt")
 require_version("transformers>=4.20.0", "To fix: pip install -r requirements.txt")
@@ -50,7 +51,7 @@ def train_epoch(epoch, model, optimizer, _criterion, lr_scheduler, dataloader, b
                     pbar.set_postfix({"loss": loss.item()})
             else:
                 data = next(dataloader)
-                data = move_to_cuda(data)
+                data = move_to_cuda(data, get_current_device())
                 outputs = model(**data)
                 loss = _criterion(outputs, None)
                 # Backward
